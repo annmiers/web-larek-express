@@ -2,9 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { faker } from '@faker-js/faker';
 import validator from 'validator';
 import Product from '../models/Product';
-import { BadRequestError } from '../errors/BadRequestError';
-import { InternalServerError } from '../errors/InternalServerError';
-import { NotFoundError } from '../errors/NotFoundError';
+import BadRequestError from '../errors/BadRequestError';
+import InternalServerError from '../errors/InternalServerError';
+import NotFoundError from '../errors/NotFoundError';
 
 interface IOrderInput {
   payment: 'card' | 'online';
@@ -15,9 +15,16 @@ interface IOrderInput {
   items: string[];
 }
 
-export const createOrder = async (req: Request, res: Response, next: NextFunction) => {
+const createOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { payment, email, phone, address, total, items }: IOrderInput = req.body;
+    const {
+      payment,
+      email,
+      phone,
+      address,
+      total,
+      items,
+    }: IOrderInput = req.body;
 
     if (!payment || !email || !phone || !address || total === undefined || !items) {
       return next(new BadRequestError('Все поля обязательны'));
@@ -52,8 +59,8 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
     const products = await Product.find({ _id: { $in: uniqueItemIds } });
 
     if (products.length !== uniqueItemIds.length) {
-      const foundIds = products.map(p => p.id);
-      const missing = uniqueItemIds.filter(id => !foundIds.includes(id));
+      const foundIds = products.map((p) => p.id);
+      const missing = uniqueItemIds.filter((id) => !foundIds.includes(id));
       return next(new NotFoundError(`Товары не найдены: ${missing.join(', ')}`));
     }
 
@@ -63,12 +70,13 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
     }
 
     const orderId = faker.string.uuid();
-    res.status(200).json({
+    return res.status(200).json({
       id: orderId,
       total: calculatedTotal,
     });
-
   } catch (error) {
-    next(new InternalServerError('Ошибка при создании заказа'));
+    return next(new InternalServerError('Ошибка при создании заказа'));
   }
 };
+
+export default createOrder;

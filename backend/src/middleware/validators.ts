@@ -46,7 +46,7 @@ export const validateCreateOrder = celebrate({
         'any.required': 'Поле email обязательно',
       }),
     phone: Joi.string()
-      .pattern(/^\+?[\d\s\-\(\)]+$/)
+      .pattern(/^\+?[\d\s\-()]+$/)
       .required()
       .messages({
         'string.pattern.base': 'Некорректный формат телефона',

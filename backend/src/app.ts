@@ -1,12 +1,13 @@
+import path from 'path';
+import { errors } from 'celebrate';
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import config from './config';
-import path from 'path';
 import productRoutes from './routes/productRoutes';
 import orderRoutes from './routes/orderRoutes';
-import { errorHandler } from './middleware/errorHandler';
+import errorHandler from './middleware/errorHandler';
 import { requestLogger, errorLogger } from './middleware/logger';
 
 const app = express();
@@ -29,9 +30,11 @@ app.use(express.static(path.join(__dirname, './public')));
 app.use('/product', productRoutes);
 app.use('/order', orderRoutes);
 
-app.use((req, res, next) => {
+app.use((_req, res, _next) => {
   res.status(404).json({ message: 'Маршрут не найден' });
 });
+
+app.use(errors());
 
 app.use(errorLogger);
 app.use(errorHandler);

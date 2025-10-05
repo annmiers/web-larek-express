@@ -7,12 +7,14 @@ export const requestLogger = expressWinston.logger({
   ],
   format: winston.format.combine(
     winston.format.timestamp(),
-    winston.format.json()
+    winston.format.json(),
   ),
   meta: true,
   msg: 'HTTP {{req.method}} {{req.url}}',
   expressFormat: true,
-  ignoreRoute: function (req, res) { return false; }
+  ignoreRoute(_req, _res) {
+    return false;
+  },
 });
 
 export const errorLogger = expressWinston.errorLogger({
@@ -21,6 +23,6 @@ export const errorLogger = expressWinston.errorLogger({
   ],
   format: winston.format.combine(
     winston.format.timestamp(),
-    winston.format.json()
+    winston.format.json(),
   ),
 });
