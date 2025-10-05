@@ -4,7 +4,6 @@ import validator from 'validator';
 import Product from '../models/Product';
 import BadRequestError from '../errors/BadRequestError';
 import InternalServerError from '../errors/InternalServerError';
-import NotFoundError from '../errors/NotFoundError';
 
 interface IOrderInput {
   payment: 'card' | 'online';
@@ -61,7 +60,7 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
     if (products.length !== uniqueItemIds.length) {
       const foundIds = products.map((p) => p.id);
       const missing = uniqueItemIds.filter((id) => !foundIds.includes(id));
-      return next(new NotFoundError(`Товары не найдены: ${missing.join(', ')}`));
+      return next(new BadRequestError(`Товары не найдены: ${missing.join(', ')}`));
     }
 
     const calculatedTotal = products.reduce((sum, p) => sum + (p.price || 0), 0);
